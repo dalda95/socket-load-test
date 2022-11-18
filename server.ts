@@ -1,13 +1,15 @@
 import * as http from "http";
 import config from "./config";
 import { Server } from 'socket.io';
+import ApiManager from "./apiManager";
+
 let connectedSockets = 0
 let lastSetIntervalTimestamp: any =  new Date()
 
 setInterval(() => {
-    const difference: number =  new Date() as any - lastSetIntervalTimestamp
-    console.log('connected count', connectedSockets, 'difference time', difference)
-    lastSetIntervalTimestamp = new Date()
+        const difference: number =  new Date() as any - lastSetIntervalTimestamp
+        console.log('connected count', connectedSockets, 'difference time', difference)
+        lastSetIntervalTimestamp = new Date()
 }, 1000)
 
 const startSocketServer = (): void => {
@@ -25,16 +27,10 @@ const startSocketServer = (): void => {
         connectedSockets += 1;
 
         socket.on('disconnect', async (reason: string) => {
-            const forPromise =  new Promise((resolve) => {
-                connectedSockets -= 1
-                for (let i = 0; i < 10000000; i++){
-                }
-                resolve(true)
-            })
 
-            await forPromise
-
-
+            connectedSockets -= 1;
+            for (let i = 0; i < 10000000; i++){
+            }
         })
     })
 };
@@ -45,4 +41,10 @@ process.on('unhandledRejection', (e) => {
 })
 
 
+const apiServer = () => {
+    ApiManager.init()
+    http.createServer(ApiManager.app).listen(config.apiPort);
+}
+
+apiServer()
 startSocketServer()
