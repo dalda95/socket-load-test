@@ -1,11 +1,15 @@
-
 const axios = require('axios');
+
+let lastSetIntervalTimestamp =  new Date()
+
 setInterval(() => {
     axios.get('http://localhost:9011/healthcheck')
         .then(response => {
-            console.log(response.status);
+            const difference =  new Date() - lastSetIntervalTimestamp
+            console.log('difference time', difference)
+            lastSetIntervalTimestamp = new Date()
         })
         .catch(error => {
             console.log(error);
         });
-}, 5000)
+}, 1000)
